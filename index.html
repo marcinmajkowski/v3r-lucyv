@@ -15,8 +15,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.4.2/Rx.min.js"></script>
   </head>
   <body>
-    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-    <div id="player"></div>
+    <iframe id="player"
+        width="640" height="360"
+        src="https://www.youtube.com/embed/UeRLiocSkog?enablejsapi=1&autoplay=1"
+        frameborder="0">
+    </iframe>
 
     <script>
       // 2. This code loads the IFrame Player API code asynchronously.
@@ -31,10 +34,6 @@
       var player;
       function onYouTubeIframeAPIReady() {
         player = new YT.Player('player', {
-          height: '390',
-          width: '640',
-          videoId: 'UeRLiocSkog',
-          playerVars: { 'autoplay': 1, 'controls': 1 },
           events: {
             'onReady': onPlayerReady,
             'onStateChange': onPlayerStateChange
