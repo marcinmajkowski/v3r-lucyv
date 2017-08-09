@@ -3,9 +3,8 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-var player;
 function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
+    new YT.Player('player', {
         events: {
             'onReady': onPlayerReady
         }
@@ -13,19 +12,16 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    playerMsElapsed(player)
-        .distinctUntilChanged()
-        .do(console.log)
-        .map(textForPlayerMsElapsed)
-        .distinctUntilChanged()
+    const player = event.target;
+    lyrics(player, lyricsArray)
         .subscribe(text => {
             content.innerHTML = text;
         });
-}
 
-function onPlayerStateChange(event) {
-    console.log(event.data);
-    console.log(event.target.getCurrentTime());
+    drums(player, drumsMsArray, 100)
+        .subscribe(isDrum => {
+            content.style = isDrum ? 'color: lime; background-color: black;' : '';
+        })
 }
 
 const msElapsed = (scheduler = Rx.Scheduler.animationFrame) =>
@@ -38,7 +34,8 @@ const msElapsed = (scheduler = Rx.Scheduler.animationFrame) =>
 
 const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
     msElapsed(scheduler)
-        .map(() => player.getCurrentTime() * 1000);
+        .map(() => player.getCurrentTime() * 1000)
+        .distinctUntilChanged();
 
 const content = document.querySelector('#content');
 
@@ -58,7 +55,7 @@ function zeroPad(n, width) {
     return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
 }
 
-const lyrics = [
+const lyricsArray = [
     {startMs: 20987, endMs: 22646, text: 'Nie jestem demonem a...'},
     {startMs: 22646, endMs: 24474, text: 'potrafię opętać słowem.'},
     {startMs: 24474, endMs: 27322, text: 'Otworzę głowy nim na zdrowie powie śmierć wam.'},
@@ -66,11 +63,46 @@ const lyrics = [
     {startMs: 30537, endMs: 33808, text: 'ono nie jest wrogiem. To dla mnie konkurencja.'},
     {startMs: 33808, endMs: 36668, text: 'Zmienia się świat boy, ziemia to bagno i nie ma to tamto'},
     {startMs: 36668, endMs: 39852, text: 'Jak trzeba się nie bać to scena jest niema i nie ma co jebać się z prawdą'},
-    {startMs: 39852, endMs: 41292, text: 'Schemat zjebał się dawno, marzenia zamnienia na banknot'},
+    {startMs: 39852, endMs: 41292, text: 'Schemat zjebał się dawno, marzenia zamienia na banknot'},
     {startMs: 41292, endMs: 99999, text: 'Mówi że trzeba doceniać co się ma i nie ma znaczenia kto zajebał światło dla nich'}
 ];
 
-function textForPlayerMsElapsed(ms) {
-    const entry = lyrics.find(entry => ms <= entry.endMs && ms >= entry.startMs);
-    return entry ? entry.text : '';
-}
+const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
+    playerMsElapsed(player, scheduler)
+        .map(ms => {
+            const entry = lyricsArray.find(entry => ms <= entry.endMs && ms >= entry.startMs);
+            return entry ? entry.text : '';
+        })
+        .distinctUntilChanged();
+
+const drumsMsArray = [
+    21586,
+    21707,
+    22042,
+    22641,
+    22904,
+    23216,
+    24067,
+    24636,
+    24886,
+    25227,
+    25846,
+    25938,
+    26341,
+    27115,
+    27692,
+    27938,
+    28321,
+    28898,
+    29130,
+    29487,
+    30283,
+    30819,
+    31030,
+    31446,
+];
+
+const drums = (player, drumsMsArray, drumDuration, scheduler = Rx.Scheduler.animationFrame) =>
+    playerMsElapsed(player, scheduler)
+        .map(ms => drumsMsArray.some(drumMs => ms < drumMs + drumDuration && ms > drumMs))
+        .distinctUntilChanged();
