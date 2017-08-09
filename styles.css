@@ -5,7 +5,9 @@ html {
 body {
   overflow-y: hidden;
   height: 100%;
-  color: lime;
+  color: white;
+  background-color: black;
+  font-family: 'Roboto', sans-serif;
 }
 
 #player {
