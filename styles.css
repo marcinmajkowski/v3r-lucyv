@@ -37,3 +37,8 @@ body {
 .content {
   display: inline;
 }
+
+.highlight {
+  color: lime;
+  background-color: black;
+}

@@ -20,7 +20,11 @@ function onPlayerReady(event) {
 
     drums(player, drumsMsArray, 100)
         .subscribe(isDrum => {
-            content.style = isDrum ? 'color: lime; background-color: black;' : '';
+            if (isDrum) {
+                content.classList.add('highlight');
+            } else {
+                content.classList.remove('highlight');
+            }
         })
 }
 
