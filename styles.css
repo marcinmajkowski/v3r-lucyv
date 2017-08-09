@@ -34,6 +34,6 @@ body {
   text-align: center;
 }
 
-#content {
+.content {
   display: inline;
 }

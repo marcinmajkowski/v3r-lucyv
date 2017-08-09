@@ -37,7 +37,7 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
         .map(() => player.getCurrentTime() * 1000)
         .distinctUntilChanged();
 
-const content = document.querySelector('#content');
+const content = document.querySelector('.content');
 
 function msToTime(s) {
     s = Math.floor(s);
