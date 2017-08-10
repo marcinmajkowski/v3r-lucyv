@@ -20,6 +20,11 @@ function onPlayerReady(event) {
             content.innerHTML = text;
         });
 
+    lyrics(player, wordsArray)
+        .subscribe(word => {
+            console.log(word);
+        });
+
     drums(player, drumsMsArray, 100)
         .subscribe(isDrum => {
             if (isDrum) {
@@ -61,8 +66,9 @@ function zeroPad(n, width) {
     return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
 }
 
+// TODO sync
 const lyricsArray = [
-    {startMs: 20987, endMs: 22646, text: 'Nie jestem demonem a...'},
+    {startMs: 20987, endMs: 22646, text: 'Nie jestem demonem ale'},
     {startMs: 22646, endMs: 24474, text: 'potrafię opętać słowem.'},
     {startMs: 24474, endMs: 27322, text: 'Otworzę głowy nim na zdrowie powie śmierć wam.'},
     {startMs: 27322, endMs: 30537, text: 'Nie pochodzę z piekła i choć mowę mam z piekła rodem,'},
@@ -73,6 +79,24 @@ const lyricsArray = [
     {startMs: 41292, endMs: 99999, text: 'Mówi że trzeba doceniać co się ma i nie ma znaczenia kto zajebał światło dla nich'}
 ];
 
+const wordsArray = [
+    { startMs: 21000, endMs: 21100, text: 'nie'},
+    { startMs: 21100, endMs: 21500, text: 'jestem'},
+    { startMs: 21500, endMs: 22100, text: 'demonem'},
+    { startMs: 22100, endMs: 22500, text: 'ale'},
+    { startMs: 22500, endMs: 23100, text: 'potrafię'},
+    { startMs: 23100, endMs: 23500, text: 'opętać'},
+    { startMs: 23500, endMs: 24200, text: 'słowem'},
+    { startMs: 24200, endMs: 24800, text: 'otworzę'},
+    { startMs: 24800, endMs: 25100, text: 'głowy'},
+    { startMs: 25100, endMs: 25300, text: 'nim'},
+    { startMs: 25300, endMs: 25500, text: 'na'},
+    { startMs: 25500, endMs: 26000, text: 'zdrowie'},
+    { startMs: 26000, endMs: 26200, text: 'powie'},
+    { startMs: 26200, endMs: 26700, text: 'śmierć'},
+    { startMs: 26700, endMs: 27000, text: 'wam'},
+];
+
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
         .map(ms => {
@@ -81,6 +105,7 @@ const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
         })
         .distinctUntilChanged();
 
+// TODO sync
 const drumsMsArray = [
     21586,
     21707,
