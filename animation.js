@@ -3,10 +3,12 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+var player;
 function onYouTubeIframeAPIReady() {
-    new YT.Player('player', {
+    player = new YT.Player('player', {
         events: {
-            'onReady': onPlayerReady
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
         }
     });
 }
@@ -110,3 +112,31 @@ const drums = (player, drumsMsArray, drumDuration, scheduler = Rx.Scheduler.anim
     playerMsElapsed(player, scheduler)
         .map(ms => drumsMsArray.some(drumMs => ms < drumMs + drumDuration && ms > drumMs))
         .distinctUntilChanged();
+
+
+// dev stuff
+var currentMs = 21100;
+document.onkeydown = function(e) {
+    e = e || window.event;
+    const key = e.which || e.keyCode;
+    switch (key) {
+        case 65:
+            // a - back
+            currentMs -= 100;
+            console.log(currentMs);
+            break;
+        case 83:
+            // s - start/stop
+            player.seekTo(currentMs / 1000, true);
+            break;
+        case 68:
+            // d - forward
+            currentMs += 100;
+            console.log(currentMs);
+            break;
+    }
+};
+
+function onPlayerStateChange(event) {
+    //console.log(Math.floor(event.target.getCurrentTime() * 1000));
+}
