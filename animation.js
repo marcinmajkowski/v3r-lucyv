@@ -32,7 +32,7 @@ function onPlayerReady(event) {
             } else {
                 content.classList.remove('highlight');
             }
-        })
+        });
 }
 
 const msElapsed = (scheduler = Rx.Scheduler.animationFrame) =>
