@@ -33,6 +33,11 @@ function onPlayerReady(event) {
                 content.classList.remove('highlight');
             }
         });
+
+    playerMsElapsed(player)
+        .let(prevAndCurrent(0))
+        .do(render([sampleAnimationObject]))
+        .subscribe();
 }
 
 const msElapsed = (scheduler = Rx.Scheduler.animationFrame) =>
@@ -165,3 +170,34 @@ document.onkeydown = function(e) {
 function onPlayerStateChange(event) {
     //console.log(Math.floor(event.target.getCurrentTime() * 1000));
 }
+
+const prevAndCurrent = (initialValue) => (source$) =>
+    source$.startWith(initialValue)
+        .bufferCount(2, 1);
+
+const render = (animationObjects) => ([prevMs, currentMs]) => {
+    animationObjects.forEach(animationObject => {
+       const isPrevMsInRange = prevMs >= animationObject.startMs && prevMs <= animationObject.endMs;
+       const isCurrentMsInRange = currentMs >= animationObject.startMs && currentMs <= animationObject.endMs;
+
+       if (!isPrevMsInRange && isCurrentMsInRange && animationObject.init) {
+           animationObject.init();
+       }
+
+       if (isCurrentMsInRange) {
+           animationObject.update(currentMs);
+       }
+
+       if (isPrevMsInRange && !isCurrentMsInRange && animationObject.destroy) {
+           animationObject.destroy();
+       }
+    });
+};
+
+const sampleAnimationObject = {
+    startMs: 3000,
+    endMs: 10000,
+    init: () => console.log('onInit'),
+    destroy: () => console.log('onDestroy'),
+    update: (ms) => console.log('update: ' + ms)
+};
