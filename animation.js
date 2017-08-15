@@ -36,7 +36,7 @@ function onPlayerReady(event) {
 
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
-        .do(render([sampleAnimationObject]))
+        .do(render(wordsAnimationObjects))
         .subscribe();
 }
 
@@ -54,6 +54,7 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
         .distinctUntilChanged();
 
 const content = document.querySelector('.content');
+const contentWrapper = document.querySelector('.content-wrapper');
 
 function msToTime(s) {
     s = Math.floor(s);
@@ -101,6 +102,8 @@ const wordsArray = [
     { startMs: 26200, endMs: 26700, text: 'śmierć'},
     { startMs: 26700, endMs: 27000, text: 'wam'},
 ];
+
+const wordsAnimationObjects = wordsArray.map(word => createSimpleTextAnimationObject(word.startMs, word.endMs, word.text));
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
@@ -194,10 +197,29 @@ const render = (animationObjects) => ([prevMs, currentMs]) => {
     });
 };
 
-const sampleAnimationObject = {
-    startMs: 3000,
-    endMs: 10000,
-    init: () => console.log('onInit'),
-    destroy: () => console.log('onDestroy'),
-    update: (ms) => console.log('update: ' + ms)
-};
+function createSimpleTextAnimationObject(startMs, endMs, text) {
+    let element;
+
+    return {
+        startMs: startMs,
+        endMs: endMs,
+        init: init,
+        destroy: destroy,
+        update: update
+    };
+
+    function init() {
+        element = document.createElement('div');
+        element.classList.add('content');
+        element.classList.add('word');
+        element.innerHTML = text;
+        contentWrapper.appendChild(element);
+    }
+
+    function destroy() {
+        contentWrapper.removeChild(element);
+    }
+
+    function update(ms) {
+    }
+}

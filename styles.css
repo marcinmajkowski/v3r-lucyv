@@ -21,7 +21,7 @@ body {
   z-index: 1;
 }
 
-#content-wrapper {
+.content-wrapper {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -42,4 +42,9 @@ body {
 .highlight {
   color: lime;
   background-color: black;
+}
+
+.word {
+  font-size: 6rem;
+  color: lime;
 }
