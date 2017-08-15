@@ -15,24 +15,24 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     const player = event.target;
-    lyrics(player, lyricsArray)
-        .subscribe(text => {
-            content.innerHTML = text;
-        });
-
-    lyrics(player, wordsArray)
-        .subscribe(word => {
-            console.log(word);
-        });
-
-    drums(player, drumsMsArray, 100)
-        .subscribe(isDrum => {
-            if (isDrum) {
-                content.classList.add('highlight');
-            } else {
-                content.classList.remove('highlight');
-            }
-        });
+    // lyrics(player, lyricsArray)
+    //     .subscribe(text => {
+    //         content.innerHTML = text;
+    //     });
+    //
+    // lyrics(player, wordsArray)
+    //     .subscribe(word => {
+    //         console.log(word);
+    //     });
+    //
+    // drums(player, drumsMsArray, 100)
+    //     .subscribe(isDrum => {
+    //         if (isDrum) {
+    //             content.classList.add('highlight');
+    //         } else {
+    //             content.classList.remove('highlight');
+    //         }
+    //     });
 
     const animation = new Animation(wordsAnimationObjects);
 
@@ -76,6 +76,8 @@ function updateVideoFrameSize() {
         videoFrame.style.height = innerHeight + 'px';
     }
 
+    // FIXME this is temporary
+    contentWrapper.style.fontSize = videoFrame.style.height.slice(0, -2) * 0.3 + 'px';
 }
 
 function msToTime(s) {
@@ -131,8 +133,8 @@ const wordsAnimationObjects = wordsArray
         word.endMs,
         word.text,
         contentWrapper,
-        {durationMs: 100, easeFn: Ease.inQuad},
-        {durationMs: 100, easeFn: Ease.outQuad}
+        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
+        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
     ));
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>

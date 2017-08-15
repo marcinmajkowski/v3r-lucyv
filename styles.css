@@ -49,6 +49,5 @@ body {
 }
 
 .word {
-  font-size: 6rem;
-  color: lime;
+  text-transform: uppercase;
 }
