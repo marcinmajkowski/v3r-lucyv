@@ -123,7 +123,7 @@ const wordsArray = [
     { startMs: 26700, endMs: 27000, text: 'wam'},
 ];
 
-const wordsAnimationObjects = wordsArray.map(word => createSimpleTextAnimationObject(word.startMs, word.endMs, word.text));
+const wordsAnimationObjects = wordsArray.map(word => new SimpleTextAnimationObject(word.startMs, word.endMs, word.text));
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
@@ -198,6 +198,7 @@ const prevAndCurrent = (initialValue) => (source$) =>
     source$.startWith(initialValue)
         .bufferCount(2, 1);
 
+// Each AnimationObject is expected to have init(), update(ms) and destroy() functions.
 const render = (animationObjects) => ([prevMs, currentMs]) => {
     animationObjects.forEach(animationObject => {
        const isPrevMsInRange = prevMs >= animationObject.startMs && prevMs <= animationObject.endMs;
@@ -217,32 +218,27 @@ const render = (animationObjects) => ([prevMs, currentMs]) => {
     });
 };
 
-function createSimpleTextAnimationObject(startMs, endMs, text) {
-    let element;
-
-    return {
-        startMs: startMs,
-        endMs: endMs,
-        init: init,
-        destroy: destroy,
-        update: update
-    };
-
-    function init() {
-        element = document.createElement('div');
-        element.classList.add('content');
-        element.classList.add('word');
-        element.innerHTML = text;
-        contentWrapper.appendChild(element);
-    }
-
-    function destroy() {
-        contentWrapper.removeChild(element);
-    }
-
-    function update(ms) {
-        const fadeInDurationMs = 200;
-        let opacity = (ms - startMs) / fadeInDurationMs;
-        element.style.opacity = opacity;
-    }
+function SimpleTextAnimationObject(startMs, endMs, text) {
+    this.startMs = startMs;
+    this.endMs = endMs;
+    this.text = text;
+    this.element = null;
 }
+
+SimpleTextAnimationObject.prototype.init = function() {
+    this.element = document.createElement('div');
+    this.element.classList.add('content');
+    this.element.classList.add('word');
+    this.element.innerHTML = this.text;
+    contentWrapper.appendChild(this.element);
+};
+
+SimpleTextAnimationObject.prototype.destroy = function() {
+    contentWrapper.removeChild(this.element);
+};
+
+SimpleTextAnimationObject.prototype.update = function(ms) {
+    const fadeInDurationMs = 200;
+    const opacity = (ms - this.startMs) / fadeInDurationMs;
+    this.element.style.opacity = opacity;
+};
