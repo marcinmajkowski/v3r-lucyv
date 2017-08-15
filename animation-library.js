@@ -23,11 +23,13 @@ Animation.prototype.update = function(prevMs, currentMs) {
     });
 };
 
-function SimpleTextAnimationObject(startMs, endMs, text, container) {
+function SimpleTextAnimationObject(startMs, endMs, text, container, fadeIn, fadeOut) {
     this.startMs = startMs;
     this.endMs = endMs;
     this.text = text;
     this.container = container;
+    this.fadeIn = fadeIn;
+    this.fadeOut = fadeOut;
     this.element = null;
     this.state = null;
 }
@@ -54,9 +56,21 @@ SimpleTextAnimationObject.prototype.destroy = function() {
     this.container.removeChild(this.element);
 };
 
+// TODO refactor
 SimpleTextAnimationObject.prototype.update = function(ms) {
     this.resetState();
-    const fadeInDurationMs = 200;
-    this.state.opacity = (ms - this.startMs) / fadeInDurationMs;
+    const progress = (ms - this.startMs) / (this.endMs - this.startMs);
+
+    if (this.fadeIn && ms - this.startMs < this.fadeIn.durationMs) {
+        const fadeInProgress = (ms - this.startMs) / this.fadeIn.durationMs;
+        this.state.opacity = this.state.opacity * this.fadeIn.easeFn(fadeInProgress);
+    }
+
+    if (this.fadeOut && this.endMs - ms < this.fadeOut.durationMs) {
+        const fadeOutProgress = (ms - (this.endMs - this.fadeOut.durationMs)) / this.fadeOut.durationMs;
+        // TODO ensure correctness (especially this '1 - something' thing)
+        this.state.opacity = this.state.opacity * (1 - this.fadeOut.easeFn(fadeOutProgress));
+    }
+
     this.element.style.opacity = this.state.opacity;
 };

@@ -125,7 +125,15 @@ const wordsArray = [
     { startMs: 26700, endMs: 27000, text: 'wam'},
 ];
 
-const wordsAnimationObjects = wordsArray.map(word => new SimpleTextAnimationObject(word.startMs, word.endMs, word.text, contentWrapper));
+const wordsAnimationObjects = wordsArray
+    .map(word => new SimpleTextAnimationObject(
+        word.startMs,
+        word.endMs,
+        word.text,
+        contentWrapper,
+        {durationMs: 100, easeFn: Ease.inQuad},
+        {durationMs: 100, easeFn: Ease.outQuad}
+    ));
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
