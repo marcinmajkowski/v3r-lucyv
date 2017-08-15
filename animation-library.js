@@ -29,7 +29,18 @@ function SimpleTextAnimationObject(startMs, endMs, text, container) {
     this.text = text;
     this.container = container;
     this.element = null;
+    this.state = null;
 }
+
+SimpleTextAnimationObject.prototype.resetState = function() {
+   this.state = {
+       position: {
+           x: 0.5,
+           y: 0.5
+       },
+       opacity: 1.0
+   };
+};
 
 SimpleTextAnimationObject.prototype.init = function() {
     this.element = document.createElement('div');
@@ -44,7 +55,8 @@ SimpleTextAnimationObject.prototype.destroy = function() {
 };
 
 SimpleTextAnimationObject.prototype.update = function(ms) {
+    this.resetState();
     const fadeInDurationMs = 200;
-    const opacity = (ms - this.startMs) / fadeInDurationMs;
-    this.element.style.opacity = opacity;
+    this.state.opacity = (ms - this.startMs) / fadeInDurationMs;
+    this.element.style.opacity = this.state.opacity;
 };
