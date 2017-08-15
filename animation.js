@@ -55,6 +55,26 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
 
 const content = document.querySelector('.content');
 const contentWrapper = document.querySelector('.content-wrapper');
+// TODO find way to read it dynamically
+const videoAspectRatio = 1760 / 990;
+const videoFrame = document.querySelector('.frame');
+updateVideoFrameSize();
+window.addEventListener('resize', updateVideoFrameSize, true);
+
+function updateVideoFrameSize() {
+    const isIOs = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const innerWidth = (isIOs) ? screen.width : window.innerWidth;
+    const innerHeight = (isIOs) ? screen.height : window.innerHeight;
+    const aspectRatio = innerWidth / innerHeight;
+    if (aspectRatio < videoAspectRatio) {
+        videoFrame.style.width = innerWidth + 'px';
+        videoFrame.style.height = innerWidth / videoAspectRatio + 'px';
+    } else {
+        videoFrame.style.width = innerHeight * videoAspectRatio + 'px';
+        videoFrame.style.height = innerHeight + 'px';
+    }
+
+}
 
 function msToTime(s) {
     s = Math.floor(s);
