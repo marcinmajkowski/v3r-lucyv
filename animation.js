@@ -34,9 +34,11 @@ function onPlayerReady(event) {
             }
         });
 
+    const animation = new Animation(wordsAnimationObjects);
+
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
-        .do(render(wordsAnimationObjects))
+        .do(([prevMs, currentMs]) => animation.update(prevMs, currentMs))
         .subscribe();
 }
 
@@ -199,22 +201,27 @@ const prevAndCurrent = (initialValue) => (source$) =>
         .bufferCount(2, 1);
 
 // Each AnimationObject is expected to have init(), update(ms) and destroy() functions.
-const render = (animationObjects) => ([prevMs, currentMs]) => {
-    animationObjects.forEach(animationObject => {
-       const isPrevMsInRange = prevMs >= animationObject.startMs && prevMs <= animationObject.endMs;
-       const isCurrentMsInRange = currentMs >= animationObject.startMs && currentMs <= animationObject.endMs;
+// TODO Animation.destroy
+function Animation(animationObjects) {
+    this.animationObjects = animationObjects;
+}
 
-       if (!isPrevMsInRange && isCurrentMsInRange && animationObject.init) {
-           animationObject.init();
-       }
+Animation.prototype.update = function(prevMs, currentMs) {
+    this.animationObjects.forEach(animationObject => {
+        const isPrevMsInRange = prevMs >= animationObject.startMs && prevMs <= animationObject.endMs;
+        const isCurrentMsInRange = currentMs >= animationObject.startMs && currentMs <= animationObject.endMs;
 
-       if (isCurrentMsInRange) {
-           animationObject.update(currentMs);
-       }
+        if (!isPrevMsInRange && isCurrentMsInRange && animationObject.init) {
+            animationObject.init();
+        }
 
-       if (isPrevMsInRange && !isCurrentMsInRange && animationObject.destroy) {
-           animationObject.destroy();
-       }
+        if (isCurrentMsInRange) {
+            animationObject.update(currentMs);
+        }
+
+        if (isPrevMsInRange && !isCurrentMsInRange && animationObject.destroy) {
+            animationObject.destroy();
+        }
     });
 };
 
