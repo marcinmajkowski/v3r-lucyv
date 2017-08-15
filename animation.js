@@ -223,6 +223,6 @@ function createSimpleTextAnimationObject(startMs, endMs, text) {
     function update(ms) {
         const fadeInDurationMs = 200;
         let opacity = (ms - startMs) / fadeInDurationMs;
-        element.style = `opacity: ${opacity}`;
+        element.style.opacity = opacity;
     }
 }
