@@ -125,7 +125,7 @@ const wordsArray = [
     { startMs: 26700, endMs: 27000, text: 'wam'},
 ];
 
-const wordsAnimationObjects = wordsArray.map(word => new SimpleTextAnimationObject(word.startMs, word.endMs, word.text));
+const wordsAnimationObjects = wordsArray.map(word => new SimpleTextAnimationObject(word.startMs, word.endMs, word.text, contentWrapper));
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
@@ -225,10 +225,11 @@ Animation.prototype.update = function(prevMs, currentMs) {
     });
 };
 
-function SimpleTextAnimationObject(startMs, endMs, text) {
+function SimpleTextAnimationObject(startMs, endMs, text, container) {
     this.startMs = startMs;
     this.endMs = endMs;
     this.text = text;
+    this.container = container;
     this.element = null;
 }
 
@@ -237,11 +238,11 @@ SimpleTextAnimationObject.prototype.init = function() {
     this.element.classList.add('content');
     this.element.classList.add('word');
     this.element.innerHTML = this.text;
-    contentWrapper.appendChild(this.element);
+    this.container.appendChild(this.element);
 };
 
 SimpleTextAnimationObject.prototype.destroy = function() {
-    contentWrapper.removeChild(this.element);
+    this.container.removeChild(this.element);
 };
 
 SimpleTextAnimationObject.prototype.update = function(ms) {
