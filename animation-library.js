@@ -13,7 +13,7 @@ Animation.prototype.update = function(prevMs, currentMs) {
             animationObject.init();
         }
 
-        if (isCurrentMsInRange) {
+        if (isCurrentMsInRange && animationObject.update) {
             animationObject.update(currentMs);
         }
 
@@ -74,3 +74,11 @@ SimpleTextAnimationObject.prototype.update = function(ms) {
 
     this.element.style.opacity = this.state.opacity;
 };
+
+function CustomAnimationObject(startMs, endMs, updateFn, initFn, destroyFn) {
+    this.startMs = startMs;
+    this.endMs = endMs;
+    this.update = updateFn;
+    this.init = initFn;
+    this.destroy = destroyFn;
+}

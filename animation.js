@@ -34,7 +34,7 @@ function onPlayerReady(event) {
     //         }
     //     });
 
-    const animation = new Animation([authorAnimationObject, ...wordsAnimationObjects]);
+    const animation = new Animation([authorAnimationObject, hideBackgroundAnimationObject, ...wordsAnimationObjects]);
 
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
@@ -145,9 +145,18 @@ const authorAnimationObject = new SimpleTextAnimationObject(
     'VISUALIZATION BY MVN13K',
     'small-word',
     animationElement,
-    {durationMs: 400, easeFn: Ease.inQuad},
-    {durationMs: 400, easeFn: Ease.outQuad},
+    {durationMs: 400, easeFn: Ease.linear},
+    {durationMs: 400, easeFn: Ease.linear},
 );
+
+// TODO this can overwrite backgroundColor applied with other animations
+// TODO fade-in, fade-out
+const hideBackgroundAnimationObject = new CustomAnimationObject(
+    8300,
+    20900,
+    null,
+    () => animationElement.style.backgroundColor = 'black',
+    () => animationElement.style.backgroundColor = '');
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
