@@ -23,10 +23,11 @@ Animation.prototype.update = function(prevMs, currentMs) {
     });
 };
 
-function SimpleTextAnimationObject(startMs, endMs, text, container, fadeIn, fadeOut) {
+function SimpleTextAnimationObject(startMs, endMs, text, cssClass, container, fadeIn, fadeOut) {
     this.startMs = startMs;
     this.endMs = endMs;
     this.text = text;
+    this.cssClass = cssClass;
     this.container = container;
     this.fadeIn = fadeIn;
     this.fadeOut = fadeOut;
@@ -46,8 +47,7 @@ SimpleTextAnimationObject.prototype.resetState = function() {
 
 SimpleTextAnimationObject.prototype.init = function() {
     this.element = document.createElement('div');
-    this.element.classList.add('content');
-    this.element.classList.add('word');
+    this.element.classList.add(this.cssClass);
     this.element.innerHTML = this.text;
     this.container.appendChild(this.element);
 };

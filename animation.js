@@ -34,7 +34,7 @@ function onPlayerReady(event) {
     //         }
     //     });
 
-    const animation = new Animation(wordsAnimationObjects);
+    const animation = new Animation([authorAnimationObject, ...wordsAnimationObjects]);
 
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
@@ -133,10 +133,21 @@ const wordsAnimationObjects = wordsArray
         word.startMs,
         word.endMs,
         word.text,
+        'big-word',
         animationElement,
         {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
         {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
     ));
+
+const authorAnimationObject = new SimpleTextAnimationObject(
+    8300,
+    8300 + 2200,
+    'VISUALIZATION BY MVN13K',
+    'small-word',
+    animationElement,
+    {durationMs: 400, easeFn: Ease.inQuad},
+    {durationMs: 400, easeFn: Ease.outQuad},
+);
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
@@ -181,14 +192,14 @@ const drums = (player, drumsMsArray, drumDuration, scheduler = Rx.Scheduler.anim
 
 
 // dev stuff
-var currentMs = 21100;
+var currentMs = 2150;
 document.onkeydown = function(e) {
     e = e || window.event;
     const key = e.which || e.keyCode;
     switch (key) {
         case 65:
             // a - back
-            currentMs -= 100;
+            currentMs -= 50;
             console.log(currentMs);
             break;
         case 83:
@@ -197,7 +208,7 @@ document.onkeydown = function(e) {
             break;
         case 68:
             // d - forward
-            currentMs += 100;
+            currentMs += 50;
             console.log(currentMs);
             break;
     }

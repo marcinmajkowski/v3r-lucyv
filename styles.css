@@ -31,11 +31,21 @@ body {
   outline: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.word {
+.big-word {
   text-transform: uppercase;
   font-size: 3em;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.small-word {
+  font-size: 0.8em;
+  position: absolute;
+  top: 51%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  letter-spacing: 0.2em;
 }
