@@ -56,29 +56,29 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
         .distinctUntilChanged();
 
 const animationElement = document.querySelector('.animation');
+const playerElement = document.querySelector('#player');
 // TODO find way to read it dynamically
 const videoAspectRatio = 1760 / 990;
-updateVideoFrameSize();
-window.addEventListener('resize', updateVideoFrameSize, true);
+updateAnimationDimensions();
+window.addEventListener('resize', updateAnimationDimensions, true);
 
-function updateVideoFrameSize() {
-    const isIOs = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const innerWidth = (isIOs) ? screen.width : window.innerWidth;
-    const innerHeight = (isIOs) ? screen.height : window.innerHeight;
-    const aspectRatio = innerWidth / innerHeight;
+function updateAnimationDimensions() {
+    const playerWidth = playerElement.offsetWidth;
+    const playerHeight = playerElement.offsetHeight;
+    const playerAspectRatio = playerWidth / playerHeight;
 
-    let width, height;
-    if (aspectRatio < videoAspectRatio) {
-        width = innerWidth;
-        height = innerWidth / videoAspectRatio;
+    let videoWidth, videoHeight;
+    if (playerAspectRatio < videoAspectRatio) {
+        videoWidth = playerWidth;
+        videoHeight = playerWidth / videoAspectRatio;
     } else {
-        width = innerHeight * videoAspectRatio;
-        height = innerHeight;
+        videoWidth = playerHeight * videoAspectRatio;
+        videoHeight = playerHeight;
     }
 
-    animationElement.style.width = width + 'px';
-    animationElement.style.height = height + 'px';
-    animationElement.style.fontSize = height * 0.1 + 'px';
+    animationElement.style.width = videoWidth + 'px';
+    animationElement.style.height = videoHeight + 'px';
+    animationElement.style.fontSize = videoHeight * 0.1 + 'px';
 }
 
 function msToTime(s) {
