@@ -55,11 +55,9 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
         .map(() => player.getCurrentTime() * 1000)
         .distinctUntilChanged();
 
-const content = document.querySelector('.content');
-const contentWrapper = document.querySelector('.content-wrapper');
+const animationElement = document.querySelector('.animation');
 // TODO find way to read it dynamically
 const videoAspectRatio = 1760 / 990;
-const videoFrame = document.querySelector('.frame');
 updateVideoFrameSize();
 window.addEventListener('resize', updateVideoFrameSize, true);
 
@@ -68,16 +66,19 @@ function updateVideoFrameSize() {
     const innerWidth = (isIOs) ? screen.width : window.innerWidth;
     const innerHeight = (isIOs) ? screen.height : window.innerHeight;
     const aspectRatio = innerWidth / innerHeight;
+
+    let width, height;
     if (aspectRatio < videoAspectRatio) {
-        videoFrame.style.width = innerWidth + 'px';
-        videoFrame.style.height = innerWidth / videoAspectRatio + 'px';
+        width = innerWidth;
+        height = innerWidth / videoAspectRatio;
     } else {
-        videoFrame.style.width = innerHeight * videoAspectRatio + 'px';
-        videoFrame.style.height = innerHeight + 'px';
+        width = innerHeight * videoAspectRatio;
+        height = innerHeight;
     }
 
-    // FIXME this is temporary
-    contentWrapper.style.fontSize = videoFrame.style.height.slice(0, -2) * 0.3 + 'px';
+    animationElement.style.width = width + 'px';
+    animationElement.style.height = height + 'px';
+    animationElement.style.fontSize = height * 0.1 + 'px';
 }
 
 function msToTime(s) {
@@ -132,7 +133,7 @@ const wordsAnimationObjects = wordsArray
         word.startMs,
         word.endMs,
         word.text,
-        contentWrapper,
+        animationElement,
         {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
         {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
     ));
