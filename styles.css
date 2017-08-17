@@ -21,7 +21,7 @@ body {
   z-index: 1;
 }
 
-.animation {
+#animation {
   position: absolute;
   top: 50%;
   left: 50%;

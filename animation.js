@@ -55,8 +55,8 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
         .map(() => player.getCurrentTime() * 1000)
         .distinctUntilChanged();
 
-const animationElement = document.querySelector('.animation');
-const playerElement = document.querySelector('#player');
+const animationElement = document.getElementById('animation');
+const playerElement = document.getElementById('player');
 // TODO find way to read it dynamically
 const videoAspectRatio = 1760 / 990;
 updateAnimationDimensions();
