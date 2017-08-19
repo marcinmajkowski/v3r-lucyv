@@ -35,10 +35,15 @@ function onPlayerReady(event) {
     //     });
 
     const animation = new Animation(animationElement, [authorAnimationObject, ...wordsAnimationObjects]);
+    const renderer = new Renderer(animationElement, [sampleAnimation]);
 
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
         .do(([prevMs, currentMs]) => animation.update(prevMs, currentMs))
+        .subscribe();
+
+    playerMsElapsed(player)
+        .do(ms => renderer.render(ms))
         .subscribe();
 }
 
@@ -225,12 +230,14 @@ const sampleAnimation = {
     element: () => document.createElement('div'),
     style: {
         opacity: progress => progress,
-        backgroundColor: progress => `rgba(0, 0, 255, ${progress})`
+        backgroundColor: progress => `rgba(0, 0, ${Math.floor(progress * 255)}, 1)`,
+        height: '3em',
     },
     children: [{
         element: () => document.createElement('p'),
         style: {
-            backgroundColor: progress => `rgba(255, 255, 255, ${progress})`
+            backgroundColor: progress => `rgba(255, 255, 255, ${progress})`,
+            height: '1em'
         }
     }]
 };
@@ -271,14 +278,14 @@ Renderer.prototype._renderAnimationObject = function(animationObject, parent, cu
         const progress = (currentMs - startMs) / (endMs - startMs);
         for (const property in animationObject.style) {
             if (animationObject.style.hasOwnProperty(property)) {
-                animationObject._element.style[property] = animationObject.style[property](progress);
+                const hasFactory = typeof animationObject.style[property] === 'function';
+                animationObject._element.style[property] = hasFactory ? animationObject.style[property](progress) : animationObject.style[property];
             }
         }
     }
 
     if (isPrevMsInRange && !isCurrentMsInRange) {
         containerElement.removeChild(animationObject._element);
-        animationObject._element = null;
     }
 
     animationObject._children.forEach(childAnimationObject => {
@@ -287,5 +294,3 @@ Renderer.prototype._renderAnimationObject = function(animationObject, parent, cu
 
     this.prevMs = currentMs;
 };
-
-new Renderer(animationElement, [sampleAnimation]).render(23000);
