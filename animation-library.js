@@ -1,6 +1,7 @@
 // Each AnimationObject is expected to have init(), update(ms) and destroy() functions.
 // TODO Animation.destroy
-function Animation(animationObjects) {
+function Animation(container, animationObjects) {
+    this.container = container;
     this.animationObjects = animationObjects;
 }
 
@@ -9,26 +10,27 @@ Animation.prototype.update = function(prevMs, currentMs) {
         const isPrevMsInRange = prevMs >= animationObject.startMs && prevMs <= animationObject.endMs;
         const isCurrentMsInRange = currentMs >= animationObject.startMs && currentMs <= animationObject.endMs;
 
-        if (!isPrevMsInRange && isCurrentMsInRange && animationObject.init) {
-            animationObject.init();
+        if (!isPrevMsInRange && isCurrentMsInRange && animationObject.create) {
+            animationObject.element = animationObject.create();
+            this.container.appendChild(animationObject.element);
         }
 
         if (isCurrentMsInRange && animationObject.update) {
             animationObject.update(currentMs);
         }
 
-        if (isPrevMsInRange && !isCurrentMsInRange && animationObject.destroy) {
-            animationObject.destroy();
+        if (isPrevMsInRange && !isCurrentMsInRange) {
+            this.container.removeChild(animationObject.element);
+            animationObject.element = null;
         }
     });
 };
 
-function SimpleTextAnimationObject(startMs, endMs, text, cssClass, container, fadeIn, fadeOut) {
+function SimpleTextAnimationObject(startMs, endMs, text, cssClass, fadeIn, fadeOut) {
     this.startMs = startMs;
     this.endMs = endMs;
     this.text = text;
     this.cssClass = cssClass;
-    this.container = container;
     this.fadeIn = fadeIn;
     this.fadeOut = fadeOut;
     this.element = null;
@@ -45,15 +47,11 @@ SimpleTextAnimationObject.prototype.resetState = function() {
    };
 };
 
-SimpleTextAnimationObject.prototype.init = function() {
-    this.element = document.createElement('div');
-    this.element.classList.add(this.cssClass);
-    this.element.innerHTML = this.text;
-    this.container.appendChild(this.element);
-};
-
-SimpleTextAnimationObject.prototype.destroy = function() {
-    this.container.removeChild(this.element);
+SimpleTextAnimationObject.prototype.create = function() {
+    const element = document.createElement('div');
+    element.classList.add(this.cssClass);
+    element.innerHTML = this.text;
+    return element;
 };
 
 // TODO refactor
@@ -74,11 +72,3 @@ SimpleTextAnimationObject.prototype.update = function(ms) {
 
     this.element.style.opacity = this.state.opacity;
 };
-
-function CustomAnimationObject(startMs, endMs, updateFn, initFn, destroyFn) {
-    this.startMs = startMs;
-    this.endMs = endMs;
-    this.update = updateFn;
-    this.init = initFn;
-    this.destroy = destroyFn;
-}

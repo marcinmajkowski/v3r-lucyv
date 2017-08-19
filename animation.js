@@ -34,7 +34,7 @@ function onPlayerReady(event) {
     //         }
     //     });
 
-    const animation = new Animation([authorAnimationObject, hideBackgroundAnimationObject, ...wordsAnimationObjects]);
+    const animation = new Animation(animationElement, [authorAnimationObject, ...wordsAnimationObjects]);
 
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
@@ -134,7 +134,6 @@ const wordsAnimationObjects = wordsArray
         word.endMs,
         word.text,
         'big-word',
-        animationElement,
         {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
         {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
     ));
@@ -144,19 +143,9 @@ const authorAnimationObject = new SimpleTextAnimationObject(
     8300 + 2200,
     'VISUALIZATION BY MVN13K',
     'small-word',
-    animationElement,
     {durationMs: 400, easeFn: Ease.linear},
     {durationMs: 400, easeFn: Ease.linear},
 );
-
-// TODO this can overwrite backgroundColor applied with other animations
-// TODO fade-in, fade-out
-const hideBackgroundAnimationObject = new CustomAnimationObject(
-    8300,
-    20900,
-    null,
-    () => animationElement.style.backgroundColor = 'black',
-    () => animationElement.style.backgroundColor = '');
 
 const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
     playerMsElapsed(player, scheduler)
@@ -230,3 +219,49 @@ function onPlayerStateChange(event) {
 const prevAndCurrent = (initialValue) => (source$) =>
     source$.startWith(initialValue)
         .bufferCount(2, 1);
+
+const sampleAnimation = {
+    timeSpan: [20000, 30000],
+    element: () => document.createElement('div'),
+    style: {
+        opacity: progress => progress,
+        backgroundColor: progress => `rgba(0, 0, 255, ${progress})`
+    },
+    children: [{
+        element: () => document.createElement('p'),
+        style: {
+            backgroundColor: progress => `rgba(255, 255, 255, ${progress})`
+        }
+    }]
+};
+
+function Renderer(containerElement, animationObjects) {
+    this.containerElement = containerElement;
+    this.animationObjects = animationObjects;
+    this.prevMs = 0;
+}
+
+// TODO accept collection
+Renderer.prototype.render = function(currentMs) {
+    this.animationObjects.forEach(animationObject => this._renderAnimationObject(animationObject, null, currentMs));
+    this.prevMs = currentMs;
+};
+
+Renderer.prototype._renderAnimationObject = function(animationObject, parent, currentMs) {
+    animationObject._parent = parent;
+    animationObject._element = typeof animationObject.element === 'function' ? animationObject.element() : animationObject.element;
+    const containerElement = parent ? parent._element : this.containerElement;
+    containerElement.appendChild(animationObject._element);
+    // TODO progress
+    const progress = 0.7;
+    for (const property in animationObject.style) {
+        if (animationObject.style.hasOwnProperty(property)) {
+            animationObject._element.style[property] = animationObject.style[property](progress);
+        }
+    }
+    if (animationObject.children) {
+        animationObject.children.forEach(childAnimationObject => this._renderAnimationObject(childAnimationObject, animationObject, currentMs));
+    }
+};
+
+new Renderer(animationElement, [sampleAnimation]).render(0);
