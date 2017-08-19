@@ -249,19 +249,44 @@ Renderer.prototype.render = function(currentMs) {
 
 Renderer.prototype._renderAnimationObject = function(animationObject, parent, currentMs) {
     animationObject._parent = parent;
-    animationObject._element = typeof animationObject.element === 'function' ? animationObject.element() : animationObject.element;
+    animationObject._timeSpan = animationObject.timeSpan ? animationObject.timeSpan : parent.timeSpan;
+    animationObject._children = animationObject.children ? animationObject.children : [];
+
+    const startMs = animationObject._timeSpan[0];
+    const endMs = animationObject._timeSpan[1];
+    const prevMs = this.prevMs;
+
+    const isPrevMsInRange = prevMs >= startMs && prevMs <= endMs;
+    const isCurrentMsInRange = currentMs >= startMs && currentMs <= endMs;
+
     const containerElement = parent ? parent._element : this.containerElement;
-    containerElement.appendChild(animationObject._element);
-    // TODO progress
-    const progress = 0.7;
-    for (const property in animationObject.style) {
-        if (animationObject.style.hasOwnProperty(property)) {
-            animationObject._element.style[property] = animationObject.style[property](progress);
+
+    if (!isPrevMsInRange && isCurrentMsInRange) {
+        const hasFactory = typeof animationObject.element === 'function';
+        animationObject._element = hasFactory ? animationObject.element() : animationObject.element;
+        containerElement.appendChild(animationObject._element);
+    }
+
+    if (isCurrentMsInRange) {
+        // TODO calculate progress
+        const progress = 0.7;
+        for (const property in animationObject.style) {
+            if (animationObject.style.hasOwnProperty(property)) {
+                animationObject._element.style[property] = animationObject.style[property](progress);
+            }
         }
     }
-    if (animationObject.children) {
-        animationObject.children.forEach(childAnimationObject => this._renderAnimationObject(childAnimationObject, animationObject, currentMs));
+
+    if (isPrevMsInRange && !isCurrentMsInRange) {
+        containerElement.removeChild(animationObject._element);
+        animationObject._element = null;
     }
+
+    animationObject._children.forEach(childAnimationObject => {
+        this._renderAnimationObject(childAnimationObject, animationObject, currentMs)
+    });
+
+    this.prevMs = currentMs;
 };
 
-new Renderer(animationElement, [sampleAnimation]).render(0);
+new Renderer(animationElement, [sampleAnimation]).render(20001);
