@@ -268,8 +268,7 @@ Renderer.prototype._renderAnimationObject = function(animationObject, parent, cu
     }
 
     if (isCurrentMsInRange) {
-        // TODO calculate progress
-        const progress = 0.7;
+        const progress = (currentMs - startMs) / (endMs - startMs);
         for (const property in animationObject.style) {
             if (animationObject.style.hasOwnProperty(property)) {
                 animationObject._element.style[property] = animationObject.style[property](progress);
@@ -289,4 +288,4 @@ Renderer.prototype._renderAnimationObject = function(animationObject, parent, cu
     this.prevMs = currentMs;
 };
 
-new Renderer(animationElement, [sampleAnimation]).render(20001);
+new Renderer(animationElement, [sampleAnimation]).render(23000);
