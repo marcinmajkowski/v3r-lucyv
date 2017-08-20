@@ -57,15 +57,6 @@ const drumsMsArray = [
     31446,
 ];
 
-const authorAnimationObject = new SimpleTextAnimationObject(
-    8300,
-    8300 + 2200,
-    'VISUALIZATION BY MVN13K',
-    'small-word',
-    {durationMs: 400, easeFn: Ease.linear},
-    {durationMs: 400, easeFn: Ease.linear},
-);
-
 /**
  * This uses a new API I am working on
  */
@@ -98,3 +89,17 @@ const wordAnimations = wordsArray.map(word => ({
         opacity: Ease.inQuad
     }
 }));
+
+const authorAnimation = {
+    timeSpan: [8300, 8300 + 2200],
+    element: () => {
+        const element = document.createElement('div');
+        element.classList.add('small-word');
+        element.innerHTML = 'VISUALIZATION BY MVN13K';
+        return element;
+    },
+    style: {
+        // TODO 400ms linear in, 400ms linear out
+        opacity: Ease.inQuad
+    }
+};

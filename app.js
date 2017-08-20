@@ -2,13 +2,7 @@ function onPlayerReady(event) {
     const player = event.target;
     const animationElement = document.getElementById('animation');
 
-    const animation = new Animation(animationElement, [authorAnimationObject]);
-    const renderer = new Renderer(animationElement, [...wordAnimations]);
-
-    playerMsElapsed(player)
-        .let(prevAndCurrent(0))
-        .do(([prevMs, currentMs]) => animation.update(prevMs, currentMs))
-        .subscribe();
+    const renderer = new Renderer(animationElement, [authorAnimation, ...wordAnimations]);
 
     playerMsElapsed(player)
         .do(ms => renderer.render(ms))
@@ -55,7 +49,3 @@ const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
     msElapsed(scheduler)
         .map(() => player.getCurrentTime() * 1000)
         .distinctUntilChanged();
-
-const prevAndCurrent = (initialValue) => (source$) =>
-    source$.startWith(initialValue)
-        .bufferCount(2, 1);
