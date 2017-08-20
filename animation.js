@@ -57,16 +57,6 @@ const drumsMsArray = [
     31446,
 ];
 
-const wordsAnimationObjects = wordsArray
-    .map(word => new SimpleTextAnimationObject(
-        word.startMs,
-        word.endMs,
-        word.text,
-        'big-word',
-        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
-        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
-    ));
-
 const authorAnimationObject = new SimpleTextAnimationObject(
     8300,
     8300 + 2200,
@@ -95,3 +85,16 @@ const sampleAnimation = {
         }
     }]
 };
+
+const wordAnimations = wordsArray.map(word => ({
+    timeSpan: [word.startMs, word.endMs],
+    element: () => {
+        const element = document.createElement('div');
+        element.classList.add('big-word');
+        element.innerHTML = word.text;
+        return element;
+    },
+    style: {
+        opacity: Ease.inQuad
+    }
+}));

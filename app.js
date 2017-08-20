@@ -2,8 +2,8 @@ function onPlayerReady(event) {
     const player = event.target;
     const animationElement = document.getElementById('animation');
 
-    const animation = new Animation(animationElement, [authorAnimationObject, ...wordsAnimationObjects]);
-    const renderer = new Renderer(animationElement, [sampleAnimation]);
+    const animation = new Animation(animationElement, [authorAnimationObject]);
+    const renderer = new Renderer(animationElement, [...wordAnimations]);
 
     playerMsElapsed(player)
         .let(prevAndCurrent(0))
