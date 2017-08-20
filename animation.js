@@ -71,7 +71,7 @@ const wordAnimations = wordsArray.map(word => ({
 }));
 
 const authorAnimation = {
-    timeSpan: [8300, 8300 + 2200],
+    timeSpan: [8400, 8400 + 2200],
     element: () => {
         const element = document.createElement('div');
         element.classList.add('small-word');
@@ -79,7 +79,22 @@ const authorAnimation = {
         return element;
     },
     style: {
-        // TODO 400ms linear in, 400ms linear out
-        opacity: Ease.inQuad
+        // TODO refactor
+        opacity: (progress, ms) => {
+            const durationMs = ms / progress;
+            const fadeInDurationMs = 400;
+            const fadeOutDurationMs = 400;
+            const fadeOutStartMs = durationMs - fadeOutDurationMs;
+            if (ms < fadeInDurationMs) {
+                let fadeInProgress = ms / fadeInDurationMs;
+                return fadeInProgress;
+            } else if (ms > fadeOutStartMs) {
+                const inFadeOutMs = ms - fadeOutStartMs;
+                const fadeOutProgress = inFadeOutMs / fadeOutDurationMs;
+                return 1 - fadeOutProgress;
+            }
+            return 1;
+        }
     }
+
 };

@@ -30,11 +30,13 @@ Animation.prototype._renderAnimationObject = function(animationObject, parent, c
     }
 
     if (isCurrentMsInRange) {
-        const progress = (currentMs - startMs) / (endMs - startMs);
+        const inAnimationMs = currentMs - startMs;
+        const animationDurationMs = endMs - startMs;
+        const progress = inAnimationMs / animationDurationMs;
         for (const property in animationObject.style) {
             if (animationObject.style.hasOwnProperty(property)) {
                 const hasFactory = typeof animationObject.style[property] === 'function';
-                animationObject._element.style[property] = hasFactory ? animationObject.style[property](progress) : animationObject.style[property];
+                animationObject._element.style[property] = hasFactory ? animationObject.style[property](progress, inAnimationMs) : animationObject.style[property];
             }
         }
     }
