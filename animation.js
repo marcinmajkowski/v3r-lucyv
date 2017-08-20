@@ -29,6 +29,24 @@ const wordsArray = [
     { startMs: 26700, endMs: 27000, text: 'wam'},
 ];
 
+const emojiWordsArray = [
+    { startMs: 21000, endMs: 21100, text: 'nie'},
+    { startMs: 21100, endMs: 21500, text: 'jestem'},
+    { startMs: 21500, endMs: 22100, text: '😈'}, // demonem
+    { startMs: 22100, endMs: 22500, text: 'ale'},
+    { startMs: 22500, endMs: 23100, text: 'potrafię'},
+    { startMs: 23100, endMs: 23500, text: 'opętać'},
+    { startMs: 23500, endMs: 24200, text: 'słowem'},
+    { startMs: 24200, endMs: 24800, text: 'otworzę'},
+    { startMs: 24800, endMs: 25100, text: '👦'}, // głowy
+    { startMs: 25100, endMs: 25300, text: 'nim'},
+    { startMs: 25300, endMs: 25500, text: 'na'},
+    { startMs: 25500, endMs: 26000, text: '🏥'}, // zdrowie
+    { startMs: 26000, endMs: 26200, text: '💬'}, // powie
+    { startMs: 26200, endMs: 26700, text: '💀'}, // śmierć
+    { startMs: 26700, endMs: 27000, text: 'wam'},
+];
+
 // TODO sync
 const drumsMsArray = [
     21586,
@@ -57,7 +75,7 @@ const drumsMsArray = [
     31446,
 ];
 
-const wordAnimations = wordsArray.map(word => ({
+const wordAnimations = emojiWordsArray.map(word => ({
     timeSpan: [word.startMs, word.endMs],
     element: () => {
         const element = document.createElement('div');
