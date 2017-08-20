@@ -125,6 +125,4 @@ Renderer.prototype._renderAnimationObject = function(animationObject, parent, cu
     animationObject._children.forEach(childAnimationObject => {
         this._renderAnimationObject(childAnimationObject, animationObject, currentMs)
     });
-
-    this.prevMs = currentMs;
 };
