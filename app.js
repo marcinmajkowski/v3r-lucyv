@@ -2,10 +2,10 @@ function onPlayerReady(event) {
     const player = event.target;
     const animationElement = document.getElementById('animation');
 
-    const renderer = new Renderer(animationElement, [authorAnimation, ...wordAnimations]);
+    const animation = new Animation(animationElement, [authorAnimation, ...wordAnimations]);
 
     playerMsElapsed(player)
-        .do(ms => renderer.render(ms))
+        .do(ms => animation.update(ms))
         .subscribe();
 }
 

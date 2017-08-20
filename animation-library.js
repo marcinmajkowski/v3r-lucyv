@@ -1,15 +1,15 @@
-function Renderer(containerElement, animationObjects) {
+function Animation(containerElement, animationObjects) {
     this.containerElement = containerElement;
     this.animationObjects = animationObjects;
     this.prevMs = 0;
 }
 
-Renderer.prototype.render = function(currentMs) {
+Animation.prototype.update = function(currentMs) {
     this.animationObjects.forEach(animationObject => this._renderAnimationObject(animationObject, null, currentMs));
     this.prevMs = currentMs;
 };
 
-Renderer.prototype._renderAnimationObject = function(animationObject, parent, currentMs) {
+Animation.prototype._renderAnimationObject = function(animationObject, parent, currentMs) {
     animationObject._parent = parent;
     animationObject._timeSpan = animationObject.timeSpan ? animationObject.timeSpan : parent.timeSpan;
     animationObject._children = animationObject.children ? animationObject.children : [];
