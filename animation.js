@@ -57,26 +57,6 @@ const drumsMsArray = [
     31446,
 ];
 
-/**
- * This uses a new API I am working on
- */
-const sampleAnimation = {
-    timeSpan: [20000, 30000],
-    element: () => document.createElement('div'),
-    style: {
-        opacity: progress => progress,
-        backgroundColor: progress => `rgba(0, 0, ${Math.floor(progress * 255)}, 1)`,
-        height: '3em',
-    },
-    children: [{
-        element: () => document.createElement('p'),
-        style: {
-            backgroundColor: progress => `rgba(255, 255, 255, ${progress})`,
-            height: '1em'
-        }
-    }]
-};
-
 const wordAnimations = wordsArray.map(word => ({
     timeSpan: [word.startMs, word.endMs],
     element: () => {
