@@ -1,107 +1,3 @@
-var tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-var player;
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
-}
-
-function onPlayerReady(event) {
-    const player = event.target;
-    // lyrics(player, lyricsArray)
-    //     .subscribe(text => {
-    //         content.innerHTML = text;
-    //     });
-    //
-    // lyrics(player, wordsArray)
-    //     .subscribe(word => {
-    //         console.log(word);
-    //     });
-    //
-    // drums(player, drumsMsArray, 100)
-    //     .subscribe(isDrum => {
-    //         if (isDrum) {
-    //             content.classList.add('highlight');
-    //         } else {
-    //             content.classList.remove('highlight');
-    //         }
-    //     });
-
-    const animation = new Animation(animationElement, [authorAnimationObject, ...wordsAnimationObjects]);
-    const renderer = new Renderer(animationElement, [sampleAnimation]);
-
-    playerMsElapsed(player)
-        .let(prevAndCurrent(0))
-        .do(([prevMs, currentMs]) => animation.update(prevMs, currentMs))
-        .subscribe();
-
-    playerMsElapsed(player)
-        .do(ms => renderer.render(ms))
-        .subscribe();
-}
-
-const msElapsed = (scheduler = Rx.Scheduler.animationFrame) =>
-    Rx.Observable.defer(() => {
-        const start = scheduler.now();
-        
-        return Rx.Observable.interval(0, scheduler)
-            .map(() => scheduler.now() - start);
-    });
-
-const playerMsElapsed = (player, scheduler = Rx.Scheduler.animationFrame) =>
-    msElapsed(scheduler)
-        .map(() => player.getCurrentTime() * 1000)
-        .distinctUntilChanged();
-
-const animationElement = document.getElementById('animation');
-const playerElement = document.getElementById('player');
-// TODO find way to read it dynamically
-const videoAspectRatio = 1760 / 990;
-updateAnimationDimensions();
-window.addEventListener('resize', updateAnimationDimensions, true);
-
-function updateAnimationDimensions() {
-    const playerWidth = playerElement.offsetWidth;
-    const playerHeight = playerElement.offsetHeight;
-    const playerAspectRatio = playerWidth / playerHeight;
-
-    let videoWidth, videoHeight;
-    if (playerAspectRatio < videoAspectRatio) {
-        videoWidth = playerWidth;
-        videoHeight = playerWidth / videoAspectRatio;
-    } else {
-        videoWidth = playerHeight * videoAspectRatio;
-        videoHeight = playerHeight;
-    }
-
-    animationElement.style.width = videoWidth + 'px';
-    animationElement.style.height = videoHeight + 'px';
-    animationElement.style.fontSize = videoHeight * 0.1 + 'px';
-}
-
-function msToTime(s) {
-    s = Math.floor(s);
-    var ms = s % 1000;
-    s = (s - ms) / 1000;
-    var secs = s % 60;
-    s = (s - secs) / 60;
-    var mins = s;
-
-    return mins + ':' + zeroPad(secs, 2) + '.' + zeroPad(ms, 3);
-}
-
-function zeroPad(n, width) {
-    n = n + '';
-    return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
-}
-
 // TODO sync
 const lyricsArray = [
     {startMs: 20987, endMs: 22646, text: 'Nie jestem demonem ale'},
@@ -133,33 +29,6 @@ const wordsArray = [
     { startMs: 26700, endMs: 27000, text: 'wam'},
 ];
 
-const wordsAnimationObjects = wordsArray
-    .map(word => new SimpleTextAnimationObject(
-        word.startMs,
-        word.endMs,
-        word.text,
-        'big-word',
-        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
-        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
-    ));
-
-const authorAnimationObject = new SimpleTextAnimationObject(
-    8300,
-    8300 + 2200,
-    'VISUALIZATION BY MVN13K',
-    'small-word',
-    {durationMs: 400, easeFn: Ease.linear},
-    {durationMs: 400, easeFn: Ease.linear},
-);
-
-const lyrics = (player, lyricsArray, scheduler = Rx.Scheduler.animationFrame) =>
-    playerMsElapsed(player, scheduler)
-        .map(ms => {
-            const entry = lyricsArray.find(entry => ms <= entry.endMs && ms >= entry.startMs);
-            return entry ? entry.text : '';
-        })
-        .distinctUntilChanged();
-
 // TODO sync
 const drumsMsArray = [
     21586,
@@ -188,43 +57,28 @@ const drumsMsArray = [
     31446,
 ];
 
-const drums = (player, drumsMsArray, drumDuration, scheduler = Rx.Scheduler.animationFrame) =>
-    playerMsElapsed(player, scheduler)
-        .map(ms => drumsMsArray.some(drumMs => ms < drumMs + drumDuration && ms > drumMs))
-        .distinctUntilChanged();
+const wordsAnimationObjects = wordsArray
+    .map(word => new SimpleTextAnimationObject(
+        word.startMs,
+        word.endMs,
+        word.text,
+        'big-word',
+        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.inQuad},
+        {durationMs: (word.endMs - word.startMs) / 3, easeFn: Ease.outQuad}
+    ));
 
+const authorAnimationObject = new SimpleTextAnimationObject(
+    8300,
+    8300 + 2200,
+    'VISUALIZATION BY MVN13K',
+    'small-word',
+    {durationMs: 400, easeFn: Ease.linear},
+    {durationMs: 400, easeFn: Ease.linear},
+);
 
-// dev stuff
-var currentMs = 2150;
-document.onkeydown = function(e) {
-    e = e || window.event;
-    const key = e.which || e.keyCode;
-    switch (key) {
-        case 65:
-            // a - back
-            currentMs -= 50;
-            console.log(currentMs);
-            break;
-        case 83:
-            // s - start/stop
-            player.seekTo(currentMs / 1000, true);
-            break;
-        case 68:
-            // d - forward
-            currentMs += 50;
-            console.log(currentMs);
-            break;
-    }
-};
-
-function onPlayerStateChange(event) {
-    //console.log(Math.floor(event.target.getCurrentTime() * 1000));
-}
-
-const prevAndCurrent = (initialValue) => (source$) =>
-    source$.startWith(initialValue)
-        .bufferCount(2, 1);
-
+/**
+ * This uses a new API I am working on
+ */
 const sampleAnimation = {
     timeSpan: [20000, 30000],
     element: () => document.createElement('div'),
@@ -240,57 +94,4 @@ const sampleAnimation = {
             height: '1em'
         }
     }]
-};
-
-function Renderer(containerElement, animationObjects) {
-    this.containerElement = containerElement;
-    this.animationObjects = animationObjects;
-    this.prevMs = 0;
-}
-
-// TODO accept collection
-Renderer.prototype.render = function(currentMs) {
-    this.animationObjects.forEach(animationObject => this._renderAnimationObject(animationObject, null, currentMs));
-    this.prevMs = currentMs;
-};
-
-Renderer.prototype._renderAnimationObject = function(animationObject, parent, currentMs) {
-    animationObject._parent = parent;
-    animationObject._timeSpan = animationObject.timeSpan ? animationObject.timeSpan : parent.timeSpan;
-    animationObject._children = animationObject.children ? animationObject.children : [];
-
-    const startMs = animationObject._timeSpan[0];
-    const endMs = animationObject._timeSpan[1];
-    const prevMs = this.prevMs;
-
-    const isPrevMsInRange = prevMs >= startMs && prevMs <= endMs;
-    const isCurrentMsInRange = currentMs >= startMs && currentMs <= endMs;
-
-    const containerElement = parent ? parent._element : this.containerElement;
-
-    if (!isPrevMsInRange && isCurrentMsInRange) {
-        const hasFactory = typeof animationObject.element === 'function';
-        animationObject._element = hasFactory ? animationObject.element() : animationObject.element;
-        containerElement.appendChild(animationObject._element);
-    }
-
-    if (isCurrentMsInRange) {
-        const progress = (currentMs - startMs) / (endMs - startMs);
-        for (const property in animationObject.style) {
-            if (animationObject.style.hasOwnProperty(property)) {
-                const hasFactory = typeof animationObject.style[property] === 'function';
-                animationObject._element.style[property] = hasFactory ? animationObject.style[property](progress) : animationObject.style[property];
-            }
-        }
-    }
-
-    if (isPrevMsInRange && !isCurrentMsInRange) {
-        containerElement.removeChild(animationObject._element);
-    }
-
-    animationObject._children.forEach(childAnimationObject => {
-        this._renderAnimationObject(childAnimationObject, animationObject, currentMs)
-    });
-
-    this.prevMs = currentMs;
 };
